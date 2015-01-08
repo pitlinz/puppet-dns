@@ -56,5 +56,18 @@ check-names response <%= @check_names_response %>;
 	dnssec-validation auto;
 
 	auth-nxdomain no;    # conform to RFC1035
-	listen-on-v6 { any; };
+<% if @listen_on.size != 0 then -%>
+    listen-on {
+    <% @listen_on.each do |listen| -%>
+	<%= listen -%>;
+    <% end -%>
+    };
+<% end -%>
+<% if @listen_on_v6.size != 0 then -%>
+    listen-on {
+    <% @listen_on_v6.each do |listen| -%>
+	<%= listen -%>;
+    <% end -%>
+    };
+<% end -%>
 };

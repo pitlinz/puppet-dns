@@ -22,6 +22,8 @@ define dns::server::options(
   $check_names_slave = undef,
   $check_names_response = undef,
   $allow_query = [],
+  $listen_on = [],
+  $listen_on_v6 = [ 'any' ],  
 ) {
   $valid_check_names = ['fail', 'warn', 'ignore']
 

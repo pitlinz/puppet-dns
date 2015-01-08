@@ -1,0 +1,23 @@
+{
+  "author": "Adam Jahn",
+  "dependencies": [
+    {
+      "name": "puppetlabs/concat",
+      "version_requirement": "\u003e\u003d1.0.0"
+    },
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": "\u003e\u003d 2.4.0"
+    }
+  ],
+  "description": "Module for provisioning DNS (bind9)",
+  "license": "",
+  "name": "ajjahn-dns",
+  "operatingsystem_support": [],
+  "project_page": "https://github.com/ajjahn/puppet-dns",
+  "requirements": [],
+  "source": "https://github.com/ajjahn/puppet-dns",
+  "summary": "Module for provisioning DNS (bind9)",
+  "tags": [],
+  "version": "1.0.0"
+}
