@@ -70,4 +70,8 @@ check-names response <%= @check_names_response %>;
     <% end -%>
     };
 <% end -%>
+
+<%- if @multiple_cnames -%>
+	// multiple_cnames <%= multiple_cnames %>;
+<%- end -%> 
 };
