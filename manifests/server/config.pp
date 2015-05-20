@@ -41,7 +41,7 @@ class dns::server::config (
     owner   => $owner,
     group   => $group,
     mode    => '0644',
-    require => Class['concat::setup'],
+    #require => Class['concat::setup'],
     notify  => Class['dns::server::service']
   }
 
