@@ -2,14 +2,14 @@
 
 include dns::server
 
-dns::server::options { '/etc/bind/named.conf.options':
+dns::server::options { "${dns::server::params::cfg_dir}/named.conf.options":
   forwarders => [ '8.8.8.8', '8.8.4.4' ]
 }
 
 dns::zone { 'example.com':
-  soa         => 'ns1.example.com',
-  soa_email   => 'admin.example.com',
-  nameservers => [ 'ns1' ],
+  soa            => 'ns1.example.com',
+  soa_email      => 'admin.example.com',
+  nameservers    => [ 'ns1' ],
   allow_transfer => [ '192.0.2.0', '2001:db8::/32' ]
 }
 

@@ -4,9 +4,12 @@
 
 Module for provisioning DNS (bind9)
 
-Tested on Ubuntu 12.04, patches to support other operating systems are welcome.
+Tested on Ubuntu 12.04 and CentOS 6.5, patches to support other operating systems are welcome.
 
 This module depends on concat (https://github.com/puppetlabs/puppet-concat).
+
+This module ''will'' overwrite all bind configuration, it is not safe to apply
+to a server with an existing bind configuration.
 
 ## Installation
 
@@ -107,11 +110,23 @@ dns::server::options { '/etc/bind/named.conf.options':
 }
 ```
 
+You can enable the report of bind stats trough the `statistics-channels` using:
+
+```puppet
+dns::server::options { '/etc/bind/named.conf.options':
+  check_names_master     => 'fail',
+  check_names_slave      => 'warn',
+  forwarders             => [ '8.8.8.8', '4.4.4.4' ],
+  statistic_channel_ip   => '127.0.0.1',
+  statistic_channel_port => 8053
+}
+```
+
 ### Exported resource patterns
 
 ```puppet
 node default {
-  # Other nodes export an A record for thier hostname
+  # Other nodes export an A record for their hostname
   @@dns::record::a { $::hostname:
     zone => $::domain, 
     data => $::ipaddress,

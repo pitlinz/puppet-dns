@@ -1,6 +1,8 @@
+# == Define dns::zone
+#
 define dns::zone (
-  $soa = "${::fqdn}.",
-  $soa_email = "root.${::fqdn}.",
+  $soa = $::fqdn,
+  $soa_email = "root.${::fqdn}",
   $zone_ttl = '604800',
   $zone_refresh = '604800',
   $zone_retry = '86400',
@@ -13,7 +15,8 @@ define dns::zone (
   $allow_forwarder = [],
   $forward_policy = 'first',
   $slave_masters = undef,
-  $zone_notify = false,
+  $zone_notify = undef,
+  $also_notify = [],
   $ensure = present
 ) {
 
@@ -21,12 +24,20 @@ define dns::zone (
 
   validate_array($allow_transfer)
   validate_array($allow_forwarder)
+
   if $dns::server::options::forwarders and $allow_forwarder {
     fail("You cannot specify a global forwarder and \
     a zone forwarder for zone ${soa}")
   }
+
   if !member(['first', 'only'], $forward_policy) {
     err('The forward policy can only be set to either first or only')
+  }
+
+  validate_array($also_notify)
+  $valid_zone_notify = ['yes', 'no', 'explicit', 'master-only']
+  if $zone_notify != undef and !member($valid_zone_notify, $zone_notify) {
+    fail("The zone_notify must be ${valid_zone_notify}")
   }
 
   $zone = $reverse ? {
@@ -34,22 +45,21 @@ define dns::zone (
     default => $name
   }
 
-  $zone_file = "${cfg_dir}/zones/db.${name}"
+  $zone_file = "${dns::server::params::data_dir}/db.${name}"
   $zone_file_stage = "${zone_file}.stage"
 
   if $ensure == absent {
     file { $zone_file:
       ensure => absent,
     }
-  } else {
+  } elsif $zone_type == 'master' {
     # Zone Database
 
     # Create "fake" zone file without zone-serial
     concat { $zone_file_stage:
-      owner   => 'bind',
-      group   => 'bind',
+      owner   => $dns::server::params::owner,
+      group   => $dns::server::params::group,
       mode    => '0644',
-      #require => [Class['concat::setup'], Class['dns::server']],
       require => Class['dns::server'],
       notify  => Exec["bump-${zone}-serial"]
     }
@@ -68,10 +78,16 @@ define dns::zone (
       path        => ['/bin', '/sbin', '/usr/bin', '/usr/sbin'],
       refreshonly => true,
       provider    => posix,
-      user        => 'bind',
-      group       => 'bind',
+      user        => $dns::server::params::owner,
+      group       => $dns::server::params::group,
       require     => Class['dns::server::install'],
       notify      => Class['dns::server::service'],
+    }
+  } else {
+    # For any zone file that is not a master zone, we should make sure
+    # we don't have a staging file
+    concat { $zone_file_stage:
+      ensure => absent
     }
   }
 

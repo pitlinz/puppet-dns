@@ -1,20 +1,20 @@
-# == Define: dns::record::aaaa
+# == Define: dns::record::ns
 #
-# Wrapper of dns::record to set AAAA records
+# Wrapper of dns::record to set NS records
 #
-define dns::record::aaaa (
+define dns::record::ns (
   $zone,
   $data,
   $ttl = '',
   $host = $name ) {
 
-  $alias = "${name},AAAA,${zone}"
+  $alias = "${name},NS,${zone}"
 
   dns::record { $alias:
     zone   => $zone,
     host   => $host,
     ttl    => $ttl,
-    record => 'AAAA',
+    record => 'NS',
     data   => $data
   }
 }
